@@ -4,7 +4,7 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM oraclelinux:7-slim
+FROM oraclelinux:8-slim
 
 RUN set -eux; \
 	groupadd --system --gid 999 mysql; \
@@ -32,16 +32,16 @@ RUN set -eux; \
 	gosu nobody true
 
 RUN set -eux; \
-# https://github.com/docker-library/mysql/pull/871#issuecomment-1167954236
-	yum install -y --setopt=skip_missing_names_on_install=False oracle-epel-release-el7; \
-	yum install -y --setopt=skip_missing_names_on_install=False \
+	microdnf install -y \
 		bzip2 \
 		gzip \
 		openssl \
 		xz \
 		zstd \
+# Oracle Linux 8+ is very slim :)
+		findutils \
 	; \
-	yum clean all
+	microdnf clean all
 
 RUN set -eux; \
 # https://dev.mysql.com/doc/refman/8.0/en/checking-gpg-signature.html
@@ -69,8 +69,8 @@ RUN set -eu; \
 	} | tee /etc/yum.repos.d/mysql-community-minimal.repo
 
 RUN set -eux; \
-	yum install -y --setopt=skip_missing_names_on_install=False "mysql-community-server-minimal-$MYSQL_VERSION"; \
-	yum clean all; \
+	microdnf install -y "mysql-community-server-minimal-$MYSQL_VERSION"; \
+	microdnf clean all; \
 # the "socket" value in the Oracle packages is set to "/var/lib/mysql" which isn't a great place for the socket (we want it in "/var/run/mysqld" instead)
 # https://github.com/docker-library/mysql/pull/680#issuecomment-636121520
 	grep -F 'socket=/var/lib/mysql/mysql.sock' /etc/my.cnf; \
@@ -82,15 +82,6 @@ RUN set -eux; \
 	! grep -F '!includedir' /etc/my.cnf; \
 	{ echo; echo '!includedir /etc/mysql/conf.d/'; } >> /etc/my.cnf; \
 	mkdir -p /etc/mysql/conf.d; \
-# 5.7 Debian-based images also included "/etc/mysql/mysql.conf.d" so let's include it too
-	{ echo '!includedir /etc/mysql/mysql.conf.d/'; } >> /etc/my.cnf; \
-	mkdir -p /etc/mysql/mysql.conf.d; \
-	\
-# comment out a few problematic configuration values
-	find /etc/my.cnf /etc/mysql/ -name '*.cnf' -print0 \
-		| xargs -0 grep -lZE '^(bind-address|log)' \
-		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/'; \
-	\
 # ensure these directories exist and have useful permissions
 # the rpm package has different opinions on the mode of `/var/run/mysqld`, so this needs to be after install
 	mkdir -p /var/lib/mysql /var/run/mysqld; \
@@ -115,10 +106,10 @@ RUN set -eu; \
 # https://github.com/docker-library/mysql/pull/680#issuecomment-825930524
 		echo 'module_hotfixes=true'; \
 	} | tee /etc/yum.repos.d/mysql-community-tools.repo
-ENV MYSQL_SHELL_VERSION 8.0.31-1.el7
+ENV MYSQL_SHELL_VERSION 8.0.31-1.el8
 RUN set -eux; \
-	yum install -y --setopt=skip_missing_names_on_install=False "mysql-shell-$MYSQL_SHELL_VERSION"; \
-	yum clean all; \
+	microdnf install -y "mysql-shell-$MYSQL_SHELL_VERSION"; \
+	microdnf clean all; \
 	\
 	mysqlsh --version
 
@@ -128,7 +119,6 @@ COPY docker-entrypoint.sh /usr/local/bin/
 RUN ln -s /usr/local/bin/docker-entrypoint.sh /entrypoint.sh # backwards compat
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
-
 
 EXPOSE 3306 33060
 CMD ["mysqld"]
