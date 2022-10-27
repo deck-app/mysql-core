@@ -55,18 +55,18 @@ RUN set -eux; \
 ENV MYSQL_MAJOR 5.7
 ENV MYSQL_VERSION 5.7.40-1.el7
 
-RUN set -eu; \
-	. /etc/os-release; \
-	{ \
-		echo '[mysql5.7-server-minimal]'; \
-		echo 'name=MySQL 5.7 Server Minimal'; \
-		echo 'enabled=1'; \
-		echo "baseurl=https://repo.mysql.com/yum/mysql-5.7-community/docker/el/7/\$basearch/"; \
-		echo 'gpgcheck=1'; \
-		echo 'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql'; \
-# https://github.com/docker-library/mysql/pull/680#issuecomment-825930524
-		echo 'module_hotfixes=true'; \
-	} | tee /etc/yum.repos.d/mysql-community-minimal.repo
+# RUN set -eu; \
+# 	. /etc/os-release; \
+# 	{ \
+# 		echo '[mysql5.7-server-minimal]'; \
+# 		echo 'name=MySQL 5.7 Server Minimal'; \
+# 		echo 'enabled=1'; \
+# 		echo "baseurl=https://repo.mysql.com/yum/mysql-5.7-community/docker/el/7/\$basearch/"; \
+# 		echo 'gpgcheck=1'; \
+# 		echo 'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-mysql'; \
+# # https://github.com/docker-library/mysql/pull/680#issuecomment-825930524
+# 		echo 'module_hotfixes=true'; \
+# 	} | tee /etc/yum.repos.d/mysql-community-minimal.repo
 
 RUN set -eux; \
 	microdnf install -y "mysql-community-server-minimal-$MYSQL_VERSION"; \
