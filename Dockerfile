@@ -1,15 +1,8 @@
-# 
-# Multi architecture MySQL docker image
-# Copyright 2021 Jamiel Sharief
-#
 FROM ubuntu:18.04
 
+LABEL maintainer Naba Das <hello@get-deck.com>
+
 ENV DATE_TIMEZONE UTC
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN groupadd -r mysql && useradd -r -g mysql mysql
-
-# Try to fix failures  ERROR: executor failed running [
 ENV DOCKER_BUILDKIT=0
 ENV COMPOSE_DOCKER_CLI_BUILD=0
 

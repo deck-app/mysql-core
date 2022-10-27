@@ -17,7 +17,6 @@ initialize() {
 
   mysqld --initialize-insecure --user=mysql
 
-  # Start temporary server
   echo "> Starting temporary server";
   if ! mysqld --daemonize --skip-networking --user=mysql; then
     echo "Error starting mysqld"
@@ -40,8 +39,6 @@ EOF
   GRANT ALL ON *.* TO 'root'@'localhost' WITH GRANT OPTION;
   FLUSH PRIVILEGES;
 EOF
-
-  # work similar to official mysql docker image
   if [ -n "$MYSQL_DATABASE" ]; then
    echo "> Creating database $MYSQL_DATABASE";
      mysql -p"$MYSQL_ROOT_PASSWORD" <<< "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;";
@@ -61,8 +58,6 @@ EOF
          mysql -p"$MYSQL_ROOT_PASSWORD" <<< "GRANT ALL ON \`${MYSQL_DATABASE}\`.* TO '$MYSQL_USER'@'%';";
 		fi
 	fi
-
-  # Shutdown temporary server
   echo "> Shutting down temporary server";
   if ! mysqladmin shutdown -uroot -p"$MYSQL_ROOT_PASSWORD"  ; then
       echo "Error shutting down mysqld"
@@ -71,23 +66,11 @@ EOF
   echo "> Complete";
 }
 
-# Initialize if needed
 if [ "$1" = 'mysqld' ]; then
   if [ ! -d "$DATADIR/mysql" ]; then
     initialize;
   fi
 fi
-
-cat <<EOF
-
-    __  ___      _____ ____    __ 
-   /  |/  /_  __/ ___// __ \  / / 
-  / /|_/ / / / /\__ \/ / / / / /  
- / /  / / /_/ /___/ / /_/ / / /___
-/_/  /_/\__, //____/\___\_\/_____/
-       /____/                     
-
-EOF
 if [ "$1" = 'mysqld' ]; then
   exec "$@" "--user=mysql"
 else
