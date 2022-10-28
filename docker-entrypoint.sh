@@ -1,8 +1,4 @@
-#!/bin/bash
-# 
-# Multi architecture MySQL docker image
-# Copyright 2021 Jamiel Sharief
-#
+#!/bin/sh
 
 DATADIR='/var/lib/mysql';
 
