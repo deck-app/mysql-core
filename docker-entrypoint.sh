@@ -67,8 +67,5 @@ if [ "$1" = 'mysqld' ]; then
     initialize;
   fi
 fi
-if [ "$1" = 'mysqld' ]; then
-  exec "$@" "--user=mysql"
-else
-  exec "$@"
-fi
+
+exec "$@"
