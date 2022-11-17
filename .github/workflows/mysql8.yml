@@ -2,10 +2,10 @@ name: Publish Docker Image
 
 on:
   push:
-    branches: [ 5.7 ]
+    branches: [ 8 ]
 env:
   IMAGE_NAME: apache
-  VERSION: 5.7
+  VERSION: 8
 jobs:
   buildImage:
     name: Build Docker Image
@@ -28,4 +28,4 @@ jobs:
 
       - uses: actions/checkout@v2
       - name: Build Container image
-        run: docker buildx build --platform linux/amd64,linux/arm64 --tag ghcr.io/deck-app/mysql:5.7 . --push
+        run: docker buildx build --platform linux/amd64,linux/arm64 --tag ghcr.io/deck-app/mysql:8 . --push

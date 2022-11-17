@@ -1,10 +1,11 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 LABEL maintainer Naba Das <hello@get-deck.com>
 
 ENV DATE_TIMEZONE UTC
 ENV DOCKER_BUILDKIT=0
 ENV COMPOSE_DOCKER_CLI_BUILD=0
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y \
     mysql-server \
